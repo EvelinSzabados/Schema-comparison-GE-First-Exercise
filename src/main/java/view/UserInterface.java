@@ -16,28 +16,8 @@ public class UserInterface {
         this.out = out;
     }
 
-    public void println(Object obj) {
-        out.println(GREEN + obj + RESET);
+    public void println(Object obj) { out.println(GREEN + obj + RESET);
     }
+    public void printData(Object obj){out.println(obj);}
 
-    public void printTitle(String title) {
-        out.println(BLUE + "\n -- " + title + " --" + RESET);
-    }
-
-    public void printOption(char option, String description) {
-        out.println("(" + option + ")" + " " + description);
-    }
-
-    public char choice(String options) {
-        String line;
-        do {
-            out.print(BLUE + "Options [" + options + "]: " + RESET);
-            line = scanner.nextLine();
-        } while (!(line.length() == 1 && options.contains(line)));
-        return line.charAt(0);
-    }
-
-    private void printPrompt(String prompt, Object defaultValue) {
-        System.out.print(prompt + " [" + defaultValue + "]: ");
-    }
 }
