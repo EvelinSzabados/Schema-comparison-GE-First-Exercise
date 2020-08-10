@@ -1,12 +1,23 @@
 package controller;
 
+import model.Database;
+import model.Table;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 public class SchemaComparison {
-    private static Connection connect() throws SQLException {
-        return DriverManager.getConnection("jdbc:mariadb://localhost/information_schema", "evelin", "password");
+
+    Database database1;
+    Database database2;
+
+    public SchemaComparison(Database database1,Database database2) throws SQLException {
+        this.database1 = database1;
+        this.database2 = database2;
     }
+
+
 
 }
