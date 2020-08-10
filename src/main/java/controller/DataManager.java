@@ -1,5 +1,6 @@
 package controller;
 
+import model.Column;
 import model.Database;
 import model.Table;
 
@@ -20,13 +21,46 @@ public class DataManager {
         ResultSet rs = st.executeQuery();
 
         while (rs.next()) {
-            database.addTables(new Table(rs.getString("table_name"),database.getName()));
+            database.addTables(new Table(rs.getString("table_name"),database.getName(),this));
         }
         rs.close();
     }
+    public void setTableRowsNumber(Table table) throws SQLException {
+        String query = "SELECT COUNT(*) AS rows FROM ?.?";
 
-    public void setColumnsForTable(Table table){
+        PreparedStatement st = conn.prepareStatement(query);
+        st.setString(1, table.getDatabaseName());
+        st.setString(2, table.getName());
 
+        ResultSet rs = st.executeQuery();
+        rs.first();
+        System.out.println(rs.getInt("rows"));
+        table.setNumberOfRows(rs.getInt("rows"));
+    }
+
+    public void setColumnsForTable(Table table) throws SQLException {
+
+        String query = "SELECT column_name," +
+                "is_nullable," +
+                "data_type," +
+                "character_maximum_length " +
+                "FROM information_schema.columns " +
+                "WHERE table_schema = ? and table_name = ?;";
+
+        PreparedStatement st = conn.prepareStatement(query);
+        st.setString(1, table.getDatabaseName());
+        st.setString(2, table.getName());
+
+        ResultSet rs = st.executeQuery();
+
+        while(rs.next()){
+            String name = rs.getString("column_name");
+            String dataType = rs.getString("data_type");
+            boolean isNullable = rs.getBoolean("is_nullable");
+            int maxLength = rs.getInt("character_maximum_length");
+            table.addColumns(new Column(name,dataType,maxLength,isNullable));
+        }
+        rs.close();
     }
     private Connection connection() throws SQLException {
         return DriverManager.getConnection("jdbc:mariadb://localhost/information_schema", "evelin", "password");

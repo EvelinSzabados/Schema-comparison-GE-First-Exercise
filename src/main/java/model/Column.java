@@ -10,7 +10,7 @@ public class Column {
     private int maxCharLength;
     private boolean isNullable;
 
-    public Column(String name, String dataType, int maxCharLength, boolean isNullable, DataManager dataManager){
+    public Column(String name, String dataType, int maxCharLength, boolean isNullable){
         this.name = name;
         this.dataType = dataType;
         this.maxCharLength = maxCharLength;
