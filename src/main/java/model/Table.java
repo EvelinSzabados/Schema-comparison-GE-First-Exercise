@@ -31,6 +31,10 @@ public class Table {
         return numberOfRows;
     }
 
+    public void setNumberOfRows(int numberOfRows){
+        this.numberOfRows = numberOfRows;
+    }
+
     public List<Column> getColumns(){
         return this.columns;
     }

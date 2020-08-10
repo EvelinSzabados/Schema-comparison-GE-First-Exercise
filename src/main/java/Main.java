@@ -13,9 +13,10 @@ public class Main {
         DataManager dataManager = new DataManager();
         Database database1 = new Database("test",dataManager);
         Database database2 = new Database("test2",dataManager);
-
-        UserInterface ui = new UserInterface(System.in, System.out);
-        new Menu(ui).run();
+        SchemaComparison sc = new SchemaComparison(database1,database2);
+        sc.getDeletedTables();
+//        UserInterface ui = new UserInterface(System.in, System.out);
+//        new Menu(ui).run();
     }
 
 }

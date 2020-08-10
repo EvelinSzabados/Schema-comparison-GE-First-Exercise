@@ -26,15 +26,15 @@ public class DataManager {
         rs.close();
     }
     public void setTableRowsNumber(Table table) throws SQLException {
-        String query = "SELECT COUNT(*) AS rows FROM ?.?";
+        String query = "SELECT COUNT(*) AS rows FROM information_schema.tables WHERE table_name=? AND table_schema=?";
 
         PreparedStatement st = conn.prepareStatement(query);
-        st.setString(1, table.getDatabaseName());
-        st.setString(2, table.getName());
+        st.setString(1, table.getName());
+        st.setString(2, table.getDatabaseName());
+
 
         ResultSet rs = st.executeQuery();
         rs.first();
-        System.out.println(rs.getInt("rows"));
         table.setNumberOfRows(rs.getInt("rows"));
     }
 
