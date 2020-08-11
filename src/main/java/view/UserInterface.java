@@ -9,6 +9,7 @@ public class UserInterface {
     PrintStream out;
     String RESET = "\u001B[0m";
     String BLUE = "\u001B[94m";
+    String GREEN = "\u001B[32m";
 
     public UserInterface(InputStream in, PrintStream out) {
         this.scanner = new Scanner(in);
@@ -18,5 +19,5 @@ public class UserInterface {
     public void println(Object obj) { out.println(BLUE + obj + RESET);
     }
     public void printData(Object obj){out.println(obj);}
-
+   public void printHeader(Object obj){out.println(GREEN + obj + RESET);}
 }

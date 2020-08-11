@@ -1,11 +1,10 @@
 package model;
 
-import controller.DataManager;
+import java.util.Objects;
 
 public class Column {
 
     private String name;
-
     private String dataType;
     private int maxCharLength;
     private boolean isNullable;
@@ -15,6 +14,8 @@ public class Column {
         this.dataType = dataType;
         this.maxCharLength = maxCharLength;
         this.isNullable = isNullable;
+
+
     }
 
     public String getName() {
@@ -31,5 +32,21 @@ public class Column {
 
     public boolean isNullable() {
         return isNullable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Column column = (Column) o;
+        return maxCharLength == column.maxCharLength &&
+                isNullable == column.isNullable &&
+                name.equals(column.name) &&
+                dataType.equals(column.dataType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, dataType, maxCharLength, isNullable);
     }
 }

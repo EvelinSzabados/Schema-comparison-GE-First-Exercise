@@ -6,7 +6,7 @@ import view.UserInterface;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, IllegalAccessException {
         UserInterface ui = new UserInterface(System.in, System.out);
         DataManager dataManager = new DataManager();
 

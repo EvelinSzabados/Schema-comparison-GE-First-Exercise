@@ -58,6 +58,7 @@ public class DataManager {
             String dataType = rs.getString("data_type");
             boolean isNullable = rs.getBoolean("is_nullable");
             int maxLength = rs.getInt("character_maximum_length");
+
             table.addColumns(new Column(name,dataType,maxLength,isNullable));
         }
         rs.close();
