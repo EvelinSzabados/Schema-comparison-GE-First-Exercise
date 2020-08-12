@@ -5,7 +5,6 @@ import model.Database;
 import model.Table;
 import view.UserInterface;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,19 +21,19 @@ public class SchemaComparison {
         this.ui = userInterface;
     }
 
-    public void printComparedTables(Set<String> deletedTables, Set<String> newTables) {
+    public void printComparedTables(Set<Table> deletedTables, Set<Table> newTables) {
 
         ui.println(String.format("%d table(s) were deleted, and %d new table(s) were added.", deletedTables.size(), newTables.size()));
         if (deletedTables.size() > 0) {
             ui.println("Deleted (or renamed):");
-            for (String deletedTable : deletedTables) {
-                ui.printData(deletedTable);
+            for (Table deletedTable : deletedTables) {
+                ui.printData(deletedTable.getName());
             }
         }
         if (newTables.size() > 0) {
             ui.println("Added (or renamed):");
-            for (String newTable : newTables) {
-                ui.printData(newTable);
+            for (Table newTable : newTables) {
+                ui.printData(newTable.getName());
             }
         }
 
@@ -42,30 +41,29 @@ public class SchemaComparison {
 
     public void printComparedColumns(List<Column> comparedColumns, Database database) {
         if(database.equals(database1)){
-            ui.println("\nModified columns:");
+            ui.println("\nColumns modified:");
         }else{
-            ui.println("\nModifications or new columns in database2:");
+            ui.println("\nList of modifications or new columns:");
         }
-        ui.printHeader("Column_name (data_type, max_character_length, is_nullable)");
 
         for (Column col : comparedColumns) {
-            ui.printData(col.getName() + "(" + col.getDataType() + ", " +
+            ui.printData("In table '" + col.getTableName() + "': " + col.getName() + "(" + col.getDataType() + ", " +
                     col.getMaxCharLength() + ", " + col.isNullable() + ")");
         }
     }
 
-    public void getModifiedTables() throws IllegalAccessException {
-        //Convert list of tables to list of table's name, than convert it to Set
-        Set<String> tablesOfDatabase1 = database1.getTables().stream().map(Table::getName).collect(Collectors.toSet());
-        Set<String> tablesOfDatabase2 = database2.getTables().stream().map(Table::getName).collect(Collectors.toSet());
+    public void getModifiedTables() {
 
-        //Get deleted tables by searching values that are in database1 but not in database2
-        Set<String> deletedTables = tablesOfDatabase1.stream()
-                .filter(tableName -> !tablesOfDatabase2.contains(tableName))
+        Set<Table> tablesOfDatabase1 = new HashSet<>(database1.getTables());
+        Set<Table> tablesOfDatabase2 = new HashSet<>(database2.getTables());
+
+
+        Set<Table> deletedTables = tablesOfDatabase1.stream()
+                .filter(table -> tablesOfDatabase2.stream().noneMatch(table::equals))
                 .collect(Collectors.toSet());
-        //Get new tables by searching values that are in database2 but not in database1
-        Set<String> newTables = tablesOfDatabase2.stream()
-                .filter(tableName -> !tablesOfDatabase1.contains(tableName))
+
+        Set<Table> newTables = tablesOfDatabase2.stream()
+                .filter(table -> tablesOfDatabase1.stream().noneMatch(table::equals))
                 .collect(Collectors.toSet());
 
         printComparedTables(deletedTables, newTables);
@@ -73,38 +71,38 @@ public class SchemaComparison {
 
     }
 
-    private Set<String> getCommonTables(Set<String> db1, Set<String> db2) {
+    private Set<Table> getCommonTables(Set<Table> db1, Set<Table> db2) {
         return db2.stream()
-                .filter(db1::contains)
+                .filter(db2Table -> db1.stream().anyMatch(db2Table::equals))
                 .collect(Collectors.toSet());
     }
 
-    private void getModifiedColumns(Set<String> commonTables) throws IllegalAccessException {
-        List<Column> deleted = new ArrayList<>();
-        List<Column> newCol = new ArrayList<>();
+    private void getModifiedColumns(Set<Table> commonTables) {
+        List<Column> deletedColumns = new ArrayList<>();
+        List<Column> modifiedColumns = new ArrayList<>();
 
         if (commonTables != null) {
-            for (String tableName : commonTables) {
-                List<Column> db1Columns = getTableColumnsByTableName(tableName, database1);
-                List<Column> db2Columns = getTableColumnsByTableName(tableName, database2);
+            for (Table table : commonTables) {
+                List<Column> db1Columns = getTableColumnsByDatabase(table, database1);
+                List<Column> db2Columns = getTableColumnsByDatabase(table, database2);
                 assert db1Columns != null;
                 assert db2Columns != null;
 
-                deleted.addAll(db1Columns);
-                newCol.addAll(db2Columns);
-                deleted.removeAll(db2Columns);
-                newCol.removeAll(db1Columns);
+                deletedColumns.addAll(db1Columns);
+                modifiedColumns.addAll(db2Columns);
+                deletedColumns.removeAll(db2Columns);
+                modifiedColumns.removeAll(db1Columns);
 
             }
-            printComparedColumns(deleted,database1);
-            printComparedColumns(newCol,database2);
+            printComparedColumns(deletedColumns,database1);
+            printComparedColumns(modifiedColumns,database2);
         }
     }
 
-    private List<Column> getTableColumnsByTableName(String name, Database database) {
+    private List<Column> getTableColumnsByDatabase(Table currentTable, Database database) {
 
         for (Table table : database.getTables()) {
-            if (name.equals(table.getName())) {
+            if (currentTable.equals(table)) {
                 return table.getColumns();
             }
         }
