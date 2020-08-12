@@ -27,7 +27,7 @@ public class SchemaComparison {
         if (deletedTables.size() > 0) {
             ui.println("Deleted (or renamed):");
             for (Table deletedTable : deletedTables) {
-                ui.printData(deletedTable.getName());
+                ui.printData(deletedTable.getName() + ": " + deletedTable.getCreationDate());
             }
         }
         if (newTables.size() > 0) {
