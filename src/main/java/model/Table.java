@@ -11,15 +11,12 @@ public class Table {
 
     private String name;
     private String databaseName;
-
-    private int numberOfRows;
     private List<Column> columns = new ArrayList<Column>();
 
     public Table(String name, String databaseName, DataManager dataManager) throws SQLException {
         this.name = name;
         this.databaseName = databaseName;
         dataManager.setColumnsForTable(this);
-        dataManager.setTableRowsNumber(this);
     }
 
     public String getName(){
@@ -27,13 +24,6 @@ public class Table {
     }
     public String getDatabaseName() {
         return databaseName;
-    }
-    public int getNumberOfRows() {
-        return numberOfRows;
-    }
-
-    public void setNumberOfRows(int numberOfRows){
-        this.numberOfRows = numberOfRows;
     }
 
     public List<Column> getColumns(){
