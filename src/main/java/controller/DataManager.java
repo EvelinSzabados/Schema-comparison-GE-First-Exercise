@@ -13,7 +13,7 @@ public class DataManager {
     }
 
     public void setTablesForDatabase(Database database) throws SQLException {
-        String query = "SELECT table_name,create_time FROM information_schema.tables WHERE table_schema=?;";
+        String query = "SELECT table_name FROM information_schema.tables WHERE table_schema=?;";
 
         PreparedStatement st = conn.prepareStatement(query);
         st.setString(1, database.getName());
@@ -21,7 +21,7 @@ public class DataManager {
         ResultSet rs = st.executeQuery();
 
         while (rs.next()) {
-            database.addTables(new Table(rs.getString("table_name"),database.getName(),rs.getTimestamp("create_time").toLocalDateTime(),this));
+            database.addTables(new Table(rs.getString("table_name"),database.getName(),this));
         }
         rs.close();
     }
